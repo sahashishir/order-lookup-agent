@@ -1,27 +1,49 @@
 from flask import Flask, request, jsonify
-import pandas as pd
+import csv
+from pathlib import Path
 
 app = Flask(__name__)
 
-# Load the CSV on startup
-orders = pd.read_csv("orders.csv", dtype={"Order_ID": str})
+# Load CSV once at startup into a dict keyed by Order_ID (as strings)
+ORDERS = {}
+csv_path = Path(__file__).parent / "orders.csv"
+with csv_path.open(newline="", encoding="utf-8") as f:
+    reader = csv.DictReader(f)
+    for row in reader:
+        # normalize Order_ID as string
+        row["Order_ID"] = str(row.get("Order_ID", "")).strip()
+        ORDERS[row["Order_ID"]] = row
+
+@app.get("/")
+def health():
+    return {"ok": True}
 
 @app.get("/order")
 def get_order():
-    order_id = request.args.get("order_id", "")
-    row = orders.loc[orders["Order_ID"] == order_id]
-    if row.empty:
+    order_id = request.args.get("order_id", "").strip()
+    if not order_id:
+        return jsonify({"found": False, "message": "order_id is required"}), 400
+
+    row = ORDERS.get(order_id)
+    if not row:
         return jsonify({"found": False, "message": f"Order {order_id} not found"}), 404
-    r = row.iloc[0].to_dict()
+
     return jsonify({
         "found": True,
-        "order_id": r["Order_ID"],
-        "status": r["Order_Status"],
-        "expected_ship_date": r["Expected_Ship_Date"],
-        "customer": r.get("Customer_Name"),
-        "product": r.get("Product"),
-        "qty": r.get("Qty")
+        "order_id": row.get("Order_ID"),
+        "status": row.get("Order_Status"),
+        "expected_ship_date": row.get("Expected_Ship_Date"),
+        "customer": row.get("Customer_Name"),
+        "product": row.get("Product"),
+        "qty": try_int(row.get("Qty"))
     })
 
+def try_int(val):
+    try:
+        return int(val)
+    except Exception:
+        return val  # leave as-is if not an int
+
 if __name__ == "__main__":
+    # local dev
     app.run(host="0.0.0.0", port=5000)
