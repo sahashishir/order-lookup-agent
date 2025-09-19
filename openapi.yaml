@@ -3,7 +3,7 @@ info:
   title: Orders Lookup API
   version: "1.0.0"
 servers:
-  - url: https://your-deployment-url.com  # replace after deploy
+  - url: https://order-lookup-agent.onrender.com
 paths:
   /order:
     get:
