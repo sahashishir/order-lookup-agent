@@ -1,0 +1,40 @@
+openapi: 3.0.3
+info:
+  title: Orders Lookup API
+  version: "1.0.0"
+servers:
+  - url: https://your-deployment-url.com  # replace after deploy
+paths:
+  /order:
+    get:
+      summary: Get order by ID
+      parameters:
+        - in: query
+          name: order_id
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  found:
+                    type: boolean
+                  order_id:
+                    type: string
+                  status:
+                    type: string
+                  expected_ship_date:
+                    type: string
+                  customer:
+                    type: string
+                  product:
+                    type: string
+                  qty:
+                    type: integer
+        "404":
+          description: Not found

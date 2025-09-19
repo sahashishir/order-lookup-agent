@@ -1,0 +1,7 @@
+Order_ID,Customer_Name,Product,Qty,Order_Status,Expected_Ship_Date
+1001,Alice Smith,Sneakers,1,Shipped,2025-09-15
+1002,Bob Jones,Jacket,2,Processing,2025-09-18
+1003,Carla Lee,Backpack,1,Delayed,2025-09-22
+1004,David Kim,Watch,1,Shipped,2025-09-16
+1005,Eva Brown,Headphones,1,Processing,2025-09-19
+1012,Fred Patel,Tablet,3,Processing,2025-09-25
